@@ -138,12 +138,12 @@ void SaveTrades(const char* path)
 int main()
 {
 	Curve originalCurve;
-	originalCurve.Load("D:\\tmp\\krakenUSD.csv");
+	originalCurve.Load("D:\\ProjectHillside\\SourceData\\krakenUSD.csv");
 	originalCurve.Crop(0.91, 0.98);
 
 	auto newCurve = originalCurve.CreateMovingAverage(15);
 
-	newCurve.Save("D:\\project_hillside\\web\\graph.csv", true);
+	newCurve.Save("D:\\ProjectHillside\\web\\graph.csv", true);
 
 	double current = newCurve.m_Data[0];
 
@@ -185,8 +185,8 @@ int main()
 	}
 
 	std::cout << sum;
-	sumCurve.Save("D:\\project_hillside\\web\\sumCurve.csv");
-	SaveTrades("D:\\project_hillside\\web\\annotations.js");
+	sumCurve.Save("D:\\ProjectHillside\\web\\sumCurve.csv");
+	SaveTrades("D:\\ProjectHillside\\web\\annotations.js");
 
 	system("pause");
 }
