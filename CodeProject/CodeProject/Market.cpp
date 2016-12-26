@@ -13,9 +13,11 @@ Market::Market()
 // 	m_OriginalCurve.BinarySave("D:\\ProjectHillside\\SourceData\\krakenUSD.bin");
 	m_OriginalCurve.BinaryLoad("D:\\ProjectHillside\\SourceData\\krakenUSD.bin");
 
-	m_OriginalCurve.Crop(0.95, 0.98);
-	m_OriginalCurve = std::move(m_OriginalCurve.CreateMovingAverage(15));
+	m_OriginalCurve.Crop(0.97, 0.9705);
+	m_OriginalCurve = std::move(m_OriginalCurve.CreateMovingAverage(5));
 	m_OriginalCurve.Save("D:\\ProjectHillside\\web\\graph.csv", Market::ratio);
+
+	m_OriginalCurve.CreateDerivate().CreateMovingAverage(2).Save("D:\\ProjectHillside\\web\\derivate.csv");
 }
 
 //////////////////////////////////////////////////////////////////////////

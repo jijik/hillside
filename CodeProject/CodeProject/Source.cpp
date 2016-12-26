@@ -14,6 +14,15 @@
 
 int main()
 {
+// 	auto x1 = 600.0;
+// 	auto x2 = 605.0;
+// 
+// 	auto rad = atan2(1.0, 3.0);
+// 	auto deg = rad * 180.0 / genv::pi;
+// 	//auto slope = tan(rad);
+// 	auto slope = 1.0 / (x2 - x1);
+// 
+// 	std::cout << slope << std::endl;
 // 	Curve originalCurve;
 // 	originalCurve.Load("D:\\ProjectHillside\\SourceData\\krakenUSD.csv");
 // 	originalCurve.Crop(0.95, 0.98);

@@ -70,9 +70,18 @@
 		
 
 		  
-		  
-		  
-	  g2 = new Dygraph(document.getElementById("graphdiv2"), "sumCurve.csv", {});
+	  g2 = new Dygraph(document.getElementById("graphdiv2"), "derivate.csv", 
+	  {
+		  underlayCallback: function(canvas, area, g) {
+		  var zero = g.toDomCoords(0, 0);
+			  
+              canvas.fillStyle = "#ffeeee";
+              canvas.fillRect(zero[0], zero[1], area.w, area.h);
+			  
+			canvas.fillStyle = "#eeffee";
+              canvas.fillRect(zero[0], 0, area.w, zero[1]);
+            }
+	  });
 		  
       for (var i = 0; i < 2; i++) {
         var line = document.createElement("div");

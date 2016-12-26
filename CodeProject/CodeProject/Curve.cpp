@@ -17,6 +17,13 @@ Curve::Curve(Curve&& rhs)
 }
 
 //////////////////////////////////////////////////////////////////////////
+Curve& Curve::operator=(Curve&& rhs)
+{
+	m_Data = std::move(rhs.m_Data);
+	return *this;
+}
+
+//////////////////////////////////////////////////////////////////////////
 void Curve::Load(const char* path)
 {
 	std::ifstream file(path);
@@ -103,6 +110,23 @@ Curve Curve::CreateMovingAverage(unsigned neighborCount)
 		c.m_Data[i] = localSum / static_cast<double>(elements);
 	}
 	return c;
+}
+
+//////////////////////////////////////////////////////////////////////////
+Curve Curve::CreateDerivate()
+{
+	int size = m_Data.size();
+	Curve ret;
+	ret.m_Data.resize(size);
+	for (int i = 0; i < size - 1; ++i)
+	{
+		auto x1 = m_Data[i];
+		auto x2 = m_Data[i+1];
+		auto diff = (x2 - x1);
+		ret.m_Data[i] = diff;
+		continue;
+	}
+	return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////
