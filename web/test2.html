@@ -1,0 +1,21 @@
+<html>
+<head>
+<script type="text/javascript" src="dygraph-combined-dev.js"></script>
+ <style type="text/css">
+.dygraph-legend > span.highlight { border: 1px solid grey; }
+</style>
+</head>
+<body>
+<div id="graphdiv3" style="width:500px; height:300px;"></div>
+<script type="text/javascript">
+g = new Dygraph(document.getElementById("graphdiv3"),
+				"graph.csv",
+					{
+					
+					highlightSeriesOpts: { strokeWidth: 2 },
+					}
+				);
+  
+</script>
+</body>
+</html>

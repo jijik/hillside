@@ -34,6 +34,16 @@
       g = new Dygraph(
             document.getElementById("graphdiv1"),
             "graph.csv", {
+			highlightSeriesOpts: { strokeWidth: 2 },
+			strokeBorderWidth : 1,
+			stackedGraph : 0,
+			highlightCircleSize: 2,
+			
+			highlightSeriesOpts: {
+			  strokeWidth: 3,
+			  strokeBorderWidth: 1,
+			  highlightCircleSize: 5
+			},
 			
 			labels: ["X","value", "target"],
 			  animatedZooms: true,
