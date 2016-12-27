@@ -11,11 +11,10 @@ struct Market
 
 	Market();
 
-	std::vector<Trade*> m_CurrentTrades;
 	std::vector<Trade*> m_TradeHistory;
 
-	Trade*	Buy(double amount);
-	void		Sell(Trade*);
+	void		Buy(double amount, Trade&);
+	void		Sell(Trade&);
 
 	bool		AdvanceTime();	//true if there is more
 
@@ -23,6 +22,8 @@ struct Market
 	double	GetNextPrice();
 
 	void		SaveTrades(const char* path);
+
+	void		Reset();
 
 	unsigned	m_CurrentDataIndex = 0;
 

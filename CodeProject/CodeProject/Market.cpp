@@ -3,21 +3,33 @@
 #include <fstream>
 #include <algorithm>
 
-const double Market::ratio = 0.995;
+const double Market::ratio = 0.9975;
 
 //////////////////////////////////////////////////////////////////////////
 Market::Market()
 {
 // 	m_OriginalCurve.Load("D:\\ProjectHillside\\SourceData\\krakenUSD.csv");
-// 
 // 	m_OriginalCurve.BinarySave("D:\\ProjectHillside\\SourceData\\krakenUSD.bin");
+
 	m_OriginalCurve.BinaryLoad("D:\\ProjectHillside\\SourceData\\krakenUSD.bin");
 
-	m_OriginalCurve.Crop(0.97, 0.9705);
-	m_OriginalCurve = std::move(m_OriginalCurve.CreateMovingAverage(5));
+	m_OriginalCurve.Crop(0.5, 0.81);
+	m_OriginalCurve = std::move(m_OriginalCurve.CreateMovingAverage(15));
 	m_OriginalCurve.Save("D:\\ProjectHillside\\web\\graph.csv", Market::ratio);
 
-	m_OriginalCurve.CreateDerivate().CreateMovingAverage(2).Save("D:\\ProjectHillside\\web\\derivate.csv");
+	m_OriginalCurve.CreateDerivate()./*CreateMovingAverage(2).*/Save("D:\\ProjectHillside\\web\\derivate.csv");
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Market::Reset()
+{
+	for (auto* t : m_TradeHistory)
+	{
+		delete t;
+	}
+	m_TradeHistory.clear();
+
+	m_CurrentDataIndex = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -44,21 +56,19 @@ double Market::GetNextPrice()
 }
 
 //////////////////////////////////////////////////////////////////////////
-Trade* Market::Buy(double amount)
+void Market::Buy(double amount, Trade& trade)
 {
-	auto* trade = new Trade(amount, GetCurrentPrice(), m_CurrentDataIndex);
-	return trade;
+	trade.Buy(amount, GetCurrentPrice(), m_CurrentDataIndex);
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Market::Sell(Trade* t)
+void Market::Sell(Trade& t)
 {
-	t->m_SoldDataIndex = m_CurrentDataIndex;
+	t.m_SoldDataIndex = m_CurrentDataIndex;
 	auto soldAt = GetCurrentPrice() * Market::ratio;
-	t->m_Profit = soldAt - t->m_BoughtAtPrice;
+	t.m_Profit = soldAt - t.m_BoughtAtPrice;
 
-	m_TradeHistory.push_back(t);
-	m_CurrentTrades.erase(std::remove(m_CurrentTrades.begin(), m_CurrentTrades.end(), t), m_CurrentTrades.end());
+	m_TradeHistory.push_back(&t);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,7 +88,8 @@ void Market::SaveTrades(const char* path)
 		file << "series : \"value\",";
 		file << "x : " << t->m_SoldDataIndex << ",";
 		file << "shortText : \"" << "S" << "\",";
-		file << "text : \"Sold from " << t->m_BoughtDataIndex <<  "\"";
+		file << "text : \"Sold from " << t->m_BoughtDataIndex << " profit: " << t->m_Profit <<  "\"";
+		file << ",cssClass : \"" << (t->m_Profit > 0.0 ? "positive" : "negative") << "Profit\"";
 		file << "},\n";
 	}
 	file << "]);});";

@@ -1,8 +1,9 @@
-﻿  Source.cpp
+﻿  Market.cpp
+  Trade.cpp
   Generating code
-  124 of 456 functions (27.2%) were compiled, the rest were copied from previous compilation.
-    72 functions were new in current compilation
-    53 functions had inline decision re-evaluated but remain unchanged
+  53 of 401 functions (13.2%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    11 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   CodeProject.vcxproj -> D:\ProjectHillside\CodeProject\Release\CodeProject.exe
   CodeProject.vcxproj -> D:\ProjectHillside\CodeProject\Release\CodeProject.pdb (Full PDB)

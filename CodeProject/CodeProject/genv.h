@@ -1,8 +1,18 @@
 #pragma once
 
-namespace genv
-{
-	Market market;
+#include "Model.h"
+#include "Market.h"
 
-	double pi = 3.14159265358979323846;
+extern Model gModel;
+
+extern Market gMarket;
+
+extern double pi;
+
+inline double SmoothValue(double originalValue, double newValue, double oldValWeight)
+{
+	return originalValue * oldValWeight + newValue * (1.0 - oldValWeight);
 }
+
+extern double gBuySmoothWeight;
+extern double gSellSmoothWeight;

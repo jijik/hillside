@@ -27,6 +27,12 @@
     <ClCompile Include="Market.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="genv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Trade.h">
@@ -39,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Market.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="genv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

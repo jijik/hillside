@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <sstream>
 #include <vector>
+#include <iomanip>
+#include <numeric>
 #include <string>
 
 #include "CSVReader.h"
@@ -14,95 +16,55 @@
 
 int main()
 {
-// 	auto x1 = 600.0;
-// 	auto x2 = 605.0;
-// 
-// 	auto rad = atan2(1.0, 3.0);
-// 	auto deg = rad * 180.0 / genv::pi;
-// 	//auto slope = tan(rad);
-// 	auto slope = 1.0 / (x2 - x1);
-// 
-// 	std::cout << slope << std::endl;
-// 	Curve originalCurve;
-// 	originalCurve.Load("D:\\ProjectHillside\\SourceData\\krakenUSD.csv");
-// 	originalCurve.Crop(0.95, 0.98);
-// 
-// 	auto newCurve = originalCurve.CreateMovingAverage(15);
-// 
-// 	newCurve.Save("D:\\ProjectHillside\\web\\graph.csv", Market::ratio);
-// 
-// 	double current = newCurve.m_Data[0];
-// 
-// 	enum State { none, bought, sold } state = none;
-// 
-// 	Curve sumCurve;
-// 
-// 	double sum = 0.0;
-// 	double boughtAtPrice = 0.0;
-// 
-// 	auto& data = newCurve.m_Data;
-// 	auto size = newCurve.m_Data.size() - 1;
-// 	for (unsigned i = 1; i < size; ++i)
-// 	{
-// 		double currentValue = data[i];
-// 		bool buy = (data[i - 1] > currentValue && currentValue < data[i + 1]);
-// 		bool sell = (data[i - 1] < currentValue && currentValue > data[i + 1]);
-// 
-// 		if (state == bought)
-// 		{
-// 			sell &= boughtAtPrice * Market::ratio < currentValue;	// immediate sell can be bad
-// 			sell |= currentValue / boughtAtPrice < 0.98; // stop loss order
-// 		}
-// 
-// 		if (buy)
-// 		{
-// 			boughtAtPrice = data[i];
-// 			state = bought;
-// 			trades.emplace_back(i, true);
-// 		}
-// 		else if (sell && state != none)
-// 		{
-// 			double diff = Market::ratio*data[i] - boughtAtPrice;
-// 			sum += diff;
-// 			sumCurve.m_Data.push_back(sum);
-// 			trades.emplace_back(i, false);
-// 			state = sold;
-// 		}
-// 	}
-// 
-// 	std::cout << sum;
-// 	sumCurve.Save("D:\\ProjectHillside\\web\\sumCurve.csv");
-// 	SaveTrades("D:\\ProjectHillside\\web\\annotations.js");
+	double currentBest = -std::numeric_limits<double>::max();
 
-	//////////////////////////////////////////////////////////////////////////
-	using genv::market;
-	
-	Trade* trade = nullptr;
+	double bestBuy = 0.0;
+	double bestSell = 0.0;
 
-	auto prevValue = genv::market.GetCurrentPrice();
+	gBuySmoothWeight = 0.7;
 
-	while (market.AdvanceTime())
+	while(gBuySmoothWeight < 1.0)
 	{
-		auto currentValue = genv::market.GetCurrentPrice();
-		auto nextValue = genv::market.GetNextPrice();
+		gSellSmoothWeight = 0.7;
+//		std::cout << "Trying [b]: " << std::fixed << gBuySmoothWeight;
 
-		if (!trade && prevValue > currentValue && nextValue > currentValue)
+		while (gSellSmoothWeight < 1.0)
 		{
-			trade = market.Buy(1.0);
-		}
-		else if (trade && prevValue < currentValue && nextValue < currentValue)
-		{
-			market.Sell(trade);
-			trade = nullptr;
-		}
+			//
+			while (gMarket.AdvanceTime())
+			{
+				gModel.UpdateTrades();
+			}
 
-		prevValue = currentValue;
+
+			auto& trades = gMarket.m_TradeHistory;
+			auto totalProfit = std::accumulate(trades.begin(), trades.end(), 0.0, [](auto d, auto* t) 
+			{
+				return d + t->m_Profit; 
+			});
+
+			if (totalProfit > currentBest)
+			{
+				currentBest = totalProfit;
+
+				bestBuy = gBuySmoothWeight;
+				bestSell = gSellSmoothWeight;
+				gMarket.SaveTrades("D:\\ProjectHillside\\web\\annotations.js");
+			
+				std::cout.precision(17);
+				std::cout << std::fixed << " Profit (" << currentBest <<"): "
+					<< bestBuy << ", " << bestSell << "\n";
+			}
+			
+			gMarket.Reset();
+			gModel.Reset();
+
+			gSellSmoothWeight += 0.004;
+		}
+		gBuySmoothWeight += 0.004;
 	}
 
-	market.SaveTrades("D:\\ProjectHillside\\web\\annotations.js");
 
-
-	//////////////////////////////////////////////////////////////////////////
 
 	system("pause");
 }
