@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>Test</title>
     <script type="text/javascript" src="dygraph-combined-dev.js"></script>
-
     <script type="text/javascript" src="data.js"></script>
     <style type="text/css">
       .line {
@@ -32,46 +30,36 @@
     </style>
   </head>
   <body>
-	<div  id="graphdiv1" style="width:100%; height:700px; position:relative;"></div>
-	<div  id="graphdiv2" style="width:100%; height:300px; position:relative;"></div>
+  	<script type="text/javascript" src="annotations.js"></script>
+	<div  id="graphdiv1" style="width:100%;"></div>
+	<div  id="graphdiv2" style="width:100%;"></div>
 	
 	
     <script type="text/javascript">
-      var lines = [];
-      var xline;
-      g = new Dygraph(
-            document.getElementById("graphdiv1"),
-            "graph.csv", {
-			highlightSeriesOpts: { strokeWidth: 2 },
-			strokeBorderWidth : 1,
-			stackedGraph : 0,
-			highlightCircleSize: 2,
+      //var lines = [];
+      //var xline;
+      g = new Dygraph(document.getElementById("graphdiv1"), "graph.csv", {
 			
-			highlightSeriesOpts: {
-			  strokeWidth: 3,
-			  strokeBorderWidth: 1,
-			  highlightCircleSize: 5
-			},
-			
-			labels: ["X","value", "target"],
-			  animatedZooms: true,
+			highlightCircleSize: 2, highlightSeriesOpts: { strokeWidth: 1, strokeBorderWidth: 1, highlightCircleSize: 2 },
+			labels: ["X", "value", "target"],
+			animatedZooms: true,
   
-              highlightCallback: function(e, x, pts) {
-                for (var i = 0; i < pts.length; i++) {
-                  var y = pts[i].canvasy;
-                  lines[i].style.visibility = "visible";
-                  lines[i].style.top = y + "px";
-                  if (i == 0) xline.style.left = pts[i].canvasx + "px";
-                }
-                xline.style.visibility = "visible";
-              },
-
-              unhighlightCallback: function(e) {
-                for (var i = 0; i < 2; i++) {
-                  lines[i].style.visibility = "hidden";
-                }
-                xline.style.visibility = "hidden";
-              }
+            //  highlightCallback: function(e, x, pts) {
+            //    for (var i = 0; i < pts.length; i++) {
+            //      var y = pts[i].canvasy;
+            //      lines[i].style.visibility = "visible";
+            //      lines[i].style.top = y + "px";
+            //      if (i == 0) xline.style.left = pts[i].canvasx + "px";
+            //    }
+            //    xline.style.visibility = "visible";
+            //  },
+            //
+            //  unhighlightCallback: function(e) {
+            //    for (var i = 0; i < 2; i++) {
+            //      lines[i].style.visibility = "hidden";
+            //    }
+            //    xline.style.visibility = "hidden";
+            //  }
             }
           );
 
@@ -91,21 +79,24 @@
             }
 	  });
 		  
-      for (var i = 0; i < 2; i++) {
-        var line = document.createElement("div");
-        line.className = "line yline";
-        document.getElementById("graphdiv1").appendChild(line);
-        lines.push(line);
-      }
+     // for (var i = 0; i < 2; i++) {
+     //   var line = document.createElement("div");
+     //   line.className = "line yline";
+     //   document.getElementById("graphdiv1").appendChild(line);
+     //   lines.push(line);
+     // }
+     //
+     // xline = document.createElement("div");
+     // xline.className = "line xline";
+     // xline.style.top = "0px";
+     // document.getElementById("graphdiv1").appendChild(xline);
+	 
+	 g.ready(annFunc(g));
 
-      xline = document.createElement("div");
-      xline.className = "line xline";
-      xline.style.top = "0px";
-      document.getElementById("graphdiv1").appendChild(xline);
+	 
     </script>
 	
-	<script type="text/javascript" src="annotations.js"></script>
-	
+ 
 	
   </body>
 </html>

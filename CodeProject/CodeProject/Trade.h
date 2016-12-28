@@ -5,11 +5,12 @@
 struct Trade
 {
 	void			Buy(double amount, double boughtAtPrice, unsigned dataIndex);
-	bool			Update(double current, double next); // return true if wants more updates
+	bool			Update(double current); // return true if wants more updates
 
 	double		m_BoughtAtPrice;
 	double		m_Amount;
 	double		m_Zip;		//price we must sell at not to have negative profit
+	unsigned	m_CreatedDataIndex;
 	unsigned	m_BoughtDataIndex;
 	unsigned	m_SoldDataIndex;
 
@@ -21,8 +22,6 @@ struct Trade
 
 	unsigned	m_Samples = 0;
 	double		m_SmoothedDerivate = 0.0;
-
-	Curve			m_Curve;
 
 	void			PreBuyUpdate(double current);
 	bool			PreSellUpdate(double current); // return true if wants more update

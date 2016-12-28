@@ -24,6 +24,12 @@ Curve& Curve::operator=(Curve&& rhs)
 }
 
 //////////////////////////////////////////////////////////////////////////
+void Curve::Clear()
+{
+	m_Data.clear();
+}
+
+//////////////////////////////////////////////////////////////////////////
 void Curve::Load(const char* path)
 {
 	std::ifstream file(path);
@@ -126,6 +132,14 @@ Curve Curve::CreateDerivate()
 		ret.m_Data[i] = diff;
 		continue;
 	}
+	return ret;
+}
+
+//////////////////////////////////////////////////////////////////////////
+Curve Curve::CreateSubcurveFromIndex(unsigned index)
+{
+	Curve ret;
+	ret.m_Data.insert(ret.m_Data.begin(), m_Data.begin() + index , m_Data.end());
 	return ret;
 }
 

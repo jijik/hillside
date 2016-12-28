@@ -1,0 +1,24 @@
+    <style type="text/css">
+      .line {
+        visibility: hidden;
+        background-color: Grey;
+        position: absolute;
+        pointer-events: none;  /* let mouse events fall through to the chart */
+      }
+      .yline {
+        width: 100%;
+        height: 1px;
+      }
+      .xline {
+        height: 100%;
+        width: 1px;
+      }
+	  .negativeProfit{
+		background-color : LightPink  !important;
+		color : black !important;
+	  }
+	  .positiveProfit{
+		background-color : LightGreen  !important;
+		color : black !important;
+	  }
+    </style>

@@ -19,7 +19,6 @@ struct Market
 	bool		AdvanceTime();	//true if there is more
 
 	double	GetCurrentPrice();
-	double	GetNextPrice();
 
 	void		SaveTrades(const char* path);
 

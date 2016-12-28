@@ -5,14 +5,24 @@
 void Model::UpdateTrades()
 {
 	auto currentPrice = gMarket.GetCurrentPrice();
-	auto nextPrice = gMarket.GetNextPrice();
 
 	auto originalSize = m_CurrentTrades.size();
+
+	m_OriginalCurve.m_Data.push_back(currentPrice);
+
+ 	if (gMarket.m_CurrentDataIndex <= 15)
+ 	{
+ 		return;	// we need a bit of data 
+ 	}
+
+ 	m_SmoothedCurve = m_OriginalCurve.CreateMovingAverage(15);
+ 	m_DerivativeCurve = m_SmoothedCurve.CreateDerivate();
+ 	m_SmoothedDerivativeCurve = m_DerivativeCurve.CreateMovingAverage(15);
 
 	for (auto it = m_CurrentTrades.begin(); it != m_CurrentTrades.end(); /*noincrement*/)
 	{
 		auto& trade = **it;
-		bool wantsMore = trade.Update(currentPrice, nextPrice);
+		bool wantsMore = trade.Update(currentPrice);
 		if (wantsMore)
 		{
 			++it;
@@ -28,6 +38,7 @@ void Model::UpdateTrades()
 	{
 		Trade* trade = new Trade;
 		trade->m_PrevPrice = currentPrice;
+		trade->m_CreatedDataIndex = gMarket.m_CurrentDataIndex;
 		m_CurrentTrades.push_back(trade);
 	}
 }
@@ -40,4 +51,9 @@ void Model::Reset()
 		delete t;
 	}
 	m_CurrentTrades.clear();
+
+	m_OriginalCurve.Clear();
+	m_SmoothedCurve.Clear();
+	m_DerivativeCurve.Clear();
+	m_SmoothedDerivativeCurve.Clear();
 }

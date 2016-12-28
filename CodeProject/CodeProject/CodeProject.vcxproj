@@ -116,6 +116,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Trade.cpp" />
+    <ClCompile Include="WebGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSVReader.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="Market.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Trade.h" />
+    <ClInclude Include="WebGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

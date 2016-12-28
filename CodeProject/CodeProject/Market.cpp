@@ -13,8 +13,8 @@ Market::Market()
 
 	m_OriginalCurve.BinaryLoad("D:\\ProjectHillside\\SourceData\\krakenUSD.bin");
 
-	m_OriginalCurve.Crop(0.5, 0.81);
-	m_OriginalCurve = std::move(m_OriginalCurve.CreateMovingAverage(15));
+	m_OriginalCurve.Crop(0.8, 0.85);
+//	m_OriginalCurve = std::move(m_OriginalCurve.CreateMovingAverage(15));
 	m_OriginalCurve.Save("D:\\ProjectHillside\\web\\graph.csv", Market::ratio);
 
 	m_OriginalCurve.CreateDerivate()./*CreateMovingAverage(2).*/Save("D:\\ProjectHillside\\web\\derivate.csv");
@@ -46,16 +46,6 @@ double Market::GetCurrentPrice()
 }
 
 //////////////////////////////////////////////////////////////////////////
-double Market::GetNextPrice()
-{
-	if (m_OriginalCurve.m_Data.size() > m_CurrentDataIndex + 1)
-	{
-		return m_OriginalCurve.m_Data[m_CurrentDataIndex + 1];
-	}
-	return 0.0;
-}
-
-//////////////////////////////////////////////////////////////////////////
 void Market::Buy(double amount, Trade& trade)
 {
 	trade.Buy(amount, GetCurrentPrice(), m_CurrentDataIndex);
@@ -75,7 +65,7 @@ void Market::Sell(Trade& t)
 void Market::SaveTrades(const char* path)
 {
 	std::ofstream file(path);
-	file << "g.ready(function(){g.setAnnotations([\n";
+	file << "var annFunc = function(g){g.setAnnotations([\n";
 	for (auto* t : m_TradeHistory)
 	{
 		file << "{";
@@ -92,6 +82,6 @@ void Market::SaveTrades(const char* path)
 		file << ",cssClass : \"" << (t->m_Profit > 0.0 ? "positive" : "negative") << "Profit\"";
 		file << "},\n";
 	}
-	file << "]);});";
+	file << "]);};";
 }
 

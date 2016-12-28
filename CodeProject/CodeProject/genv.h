@@ -16,3 +16,14 @@ inline double SmoothValue(double originalValue, double newValue, double oldValWe
 
 extern double gBuySmoothWeight;
 extern double gSellSmoothWeight;
+
+namespace AppMode 
+{
+	enum type
+	{
+		FindBest,
+		Analyze
+	};
+}
+
+extern AppMode::type gAppMode;

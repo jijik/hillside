@@ -8,6 +8,8 @@ struct Curve
 	Curve(Curve&& rhs);
 	Curve& operator=(Curve&&);
 
+	void	Clear();
+
 	void	Load(const char* path);
 	void	Save(const char* path, double targetRatio = 1.0);
 
@@ -16,8 +18,9 @@ struct Curve
 
 	void	Crop(double begin, double end); //0-1
 
-	Curve CreateMovingAverage(unsigned neighborCount);
-	Curve CreateDerivate();
+	Curve	CreateMovingAverage(unsigned neighborCount);
+	Curve	CreateDerivate();
+	Curve	CreateSubcurveFromIndex(unsigned index);
 
 	std::vector<double> m_Data;
 };

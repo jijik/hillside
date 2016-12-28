@@ -1,6 +1,7 @@
 #include "Trade.h"
 #include "Market.h"
 #include "genv.h"
+#include "WebGenerator.h"
 
 //////////////////////////////////////////////////////////////////////////
 void Trade::Buy(double amount, double boughtAtPrice, unsigned dataIndex)
@@ -13,7 +14,7 @@ void Trade::Buy(double amount, double boughtAtPrice, unsigned dataIndex)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Trade::Update(double current, double next)
+bool Trade::Update(double current)
 {
 	bool ret = true;
 
@@ -34,59 +35,78 @@ bool Trade::Update(double current, double next)
 //////////////////////////////////////////////////////////////////////////
 void Trade::PreBuyUpdate(double current)
 {
-// 	m_Curve.m_Data.push_back(current);
-// 
-// 	auto smoothedCurve = m_Curve.CreateMovingAverage(15);
-// 	auto derivate = smoothedCurve.CreateDerivate();
-// 
-// 	double smoothedDerivate = 0.0;
-// 	for (unsigned i = 0; i < derivate.m_Data.size() - 1; ++i)
-// 	{
-// 		auto diff = derivate.m_Data[i + 1] - derivate.m_Data[i];
-// 		smoothedDerivate = SmoothValue(smoothedDerivate, diff, gBuySmoothWeight);
-// 	}
+	double smoothedDerivate = 0.0;
+	auto derivativeCurve = gModel.m_SmoothedDerivativeCurve.CreateSubcurveFromIndex(m_CreatedDataIndex);
+	auto& derivative = derivativeCurve.m_Data;
+	for (unsigned i = 0; i < derivative.size(); ++i)
+	{
+		smoothedDerivate = SmoothValue(smoothedDerivate, derivative[i], gBuySmoothWeight);
+	}
 
-	++m_Samples;
-	auto diff = current - m_PrevPrice;
-
-	m_SmoothedDerivate = SmoothValue(m_SmoothedDerivate, diff, gBuySmoothWeight);
-
-	if (m_Samples > 10 && m_SmoothedDerivate > 0)
+	if (derivative.size() > 5 && smoothedDerivate > 0)
 	{
 		gMarket.Buy(1.0, *this);
+
+// 		gModel.m_OriginalCurve.Save("D:\\ProjectHillside\\web\\graphs\\Aoriginal.csv");
+// 		gModel.m_SmoothedCurve.Save("D:\\ProjectHillside\\web\\graphs\\Asmoothed.csv");
+// 		gModel.m_DerivativeCurve.Save("D:\\ProjectHillside\\web\\graphs\\Aderivative.csv");
+// 		gModel.m_SmoothedDerivativeCurve.Save("D:\\ProjectHillside\\web\\graphs\\AsmoothedDerivative.csv");
+// 		WebGenerator gen;
+// 		gen.PushGraph("graphs/Aoriginal.csv");
+// 		gen.PushGraph("graphs/Asmoothed.csv");
+// 		gen.PushGraph("graphs/Aderivative.csv", GraphType::PositiveNegative);
+// 		gen.PushGraph("graphs/AsmoothedDerivative.csv", GraphType::PositiveNegative);
+// 		gen.Generate("D:\\ProjectHillside\\web\\Agenerated.html");
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 bool Trade::PreSellUpdate(double current)
 {
-// 	m_Curve.m_Data.push_back(current);
-// 
-// 	auto smoothedCurve = m_Curve.CreateMovingAverage(15);
-// 	auto derivate = smoothedCurve.CreateDerivate();
-// 
-// 	double smoothedDerivate = 0.0;
-// 	for (unsigned i = 0; i < derivate.m_Data.size() - 1; ++i)
-// 	{
-// 		auto diff = derivate.m_Data[i + 1] - derivate.m_Data[i];
-// 		smoothedDerivate = SmoothValue(smoothedDerivate, diff, gBuySmoothWeight);
-// 	}
-// 
-// 	if (smoothedDerivate < 0)
-// 	{
-// 		gMarket.Sell(*this);
-// 		return false;
-// 	}
-// 	return true;
+	double smoothedDerivate = 0.0;
+	auto derivativeCurve = gModel.m_SmoothedDerivativeCurve.CreateSubcurveFromIndex(m_CreatedDataIndex);
+	auto& derivative = derivativeCurve.m_Data;
 
-	auto diff = current - m_PrevPrice;
+	for (unsigned i = 0; i < derivative.size(); ++i)
+	{
+		smoothedDerivate = SmoothValue(smoothedDerivate, derivative[i], gSellSmoothWeight);
+	}
 
-	m_SmoothedDerivate = SmoothValue(m_SmoothedDerivate, diff, gSellSmoothWeight);
-	if (m_SmoothedDerivate < 0)
+	if (smoothedDerivate < 0)
 	{
 		gMarket.Sell(*this);
 		return false;
 	}
-
 	return true;
-	 }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// ORIGINAL UPDATES
+////////////////////////////////////////////////////////////////////////////
+//void Trade::PreBuyUpdate(double current)
+//{
+//	++m_Samples;
+//	auto diff = current - m_PrevPrice;
+//
+//	m_SmoothedDerivate = SmoothValue(m_SmoothedDerivate, diff, gBuySmoothWeight);
+//
+//	if (m_Samples > 10 && m_SmoothedDerivate > 0)
+//	{
+//		gMarket.Buy(1.0, *this);
+//	}
+//}
+////
+//////////////////////////////////////////////////////////////////////////////
+//bool Trade::PreSellUpdate(double current)
+//{
+//	auto diff = current - m_PrevPrice;
+//
+//	m_SmoothedDerivate = SmoothValue(m_SmoothedDerivate, diff, gSellSmoothWeight);
+//	if (m_SmoothedDerivate < 0)
+//	{
+//		gMarket.Sell(*this);
+//		return false;
+//	}
+//
+//	return true;
+//}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+	<script type="text/javascript" src="dygraph-combined-dev.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+	    <style type="text/css">
+      .line {
+        visibility: hidden;
+        background-color: Grey;
+        position: absolute;
+        pointer-events: none;  /* let mouse events fall through to the chart */
+      }
+      .yline {
+        width: 100%;
+        height: 1px;
+      }
+      .xline {
+        height: 100%;
+        width: 1px;
+      }
+	  .negativeProfit{
+		background-color : LightPink  !important;
+		color : black !important;
+	  }
+	  .positiveProfit{
+		background-color : LightGreen  !important;
+		color : black !important;
+	  }
+    </style></head>
+<body>
+<script type="text/javascript" src="annotations.js"></script>
+<div id="divId0" style="width:90%;"></div>
+<script type="text/javascript">
+divId0 = new Dygraph(document.getElementById("divId0"), "graphs/Aoriginal.csv", {
+highlightCircleSize: 2, highlightSeriesOpts : { strokeWidth: 1, strokeBorderWidth : 1, highlightCircleSize : 2 },
+labels : ["X", "value", "target"],
+animatedZooms : true,
+});
+</script>
+<div id="divId1" style="width:90%;"></div>
+<script type="text/javascript">
+divId1 = new Dygraph(document.getElementById("divId1"), "graphs/Asmoothed.csv", {
+highlightCircleSize: 2, highlightSeriesOpts : { strokeWidth: 1, strokeBorderWidth : 1, highlightCircleSize : 2 },
+labels : ["X", "value", "target"],
+animatedZooms : true,
+});
+</script>
+<div id="divId2" style="width:90%;"></div>
+<script type="text/javascript">
+divId2 = new Dygraph(document.getElementById("divId2"), "graphs/Aderivative.csv", {
+highlightCircleSize: 2, highlightSeriesOpts : { strokeWidth: 1, strokeBorderWidth : 1, highlightCircleSize : 2 },
+labels : ["X", "value", "target"],
+animatedZooms : true,
+underlayCallback: function(canvas, area, g) {var zero = g.toDomCoords(0, 0);canvas.fillStyle = "#ffeeee"; canvas.fillRect(zero[0], zero[1], 999*area.w, area.h);canvas.fillStyle = "#eeffee"; canvas.fillRect(zero[0], 0, area.w*99, zero[1]);}});
+</script>
+<div id="divId3" style="width:90%;"></div>
+<script type="text/javascript">
+divId3 = new Dygraph(document.getElementById("divId3"), "graphs/AsmoothedDerivative.csv", {
+highlightCircleSize: 2, highlightSeriesOpts : { strokeWidth: 1, strokeBorderWidth : 1, highlightCircleSize : 2 },
+labels : ["X", "value", "target"],
+animatedZooms : true,
+underlayCallback: function(canvas, area, g) {var zero = g.toDomCoords(0, 0);canvas.fillStyle = "#ffeeee"; canvas.fillRect(zero[0], zero[1], 999*area.w, area.h);canvas.fillStyle = "#eeffee"; canvas.fillRect(zero[0], 0, area.w*99, zero[1]);}});
+</script>
+</body>
+</html>
