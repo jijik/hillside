@@ -13,6 +13,8 @@ struct Market
 
 	std::vector<Trade*> m_TradeHistory;
 
+	void		Init(double from, double to);
+
 	void		Buy(double amount, Trade&);
 	void		Sell(Trade&);
 
@@ -26,6 +28,10 @@ struct Market
 
 	unsigned	m_CurrentDataIndex = 0;
 
-	Curve			m_OriginalCurve;
+	Curve			m_OriginalCurve; //current segment
+	Curve			m_OrigianlFullCurve;
+
+	double		m_From;
+	double		m_To;
 };
 

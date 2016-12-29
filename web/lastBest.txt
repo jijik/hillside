@@ -1,0 +1,4 @@
+gIdealCurveMovingAvgHistoryNeighbors 1.65529
+gIdealCurveMovingAvgFutureNeighbors 31.3203
+gBuySmoothWeight 0.968497
+gSellSmoothWeight 0.990335

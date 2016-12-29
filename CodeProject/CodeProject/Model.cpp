@@ -2,22 +2,31 @@
 #include "genv.h"
 
 //////////////////////////////////////////////////////////////////////////
+void Model::Init()
+{
+	m_IdealCurve = gMarket.m_OriginalCurve.CreateMovingAverage(
+		static_cast<unsigned>(gIdealCurveMovingAvgHistoryNeighbors),
+		static_cast<unsigned>(gIdealCurveMovingAvgFutureNeighbors));
+}
+
+//////////////////////////////////////////////////////////////////////////
 void Model::UpdateTrades()
 {
-	auto currentPrice = gMarket.GetCurrentPrice();
+//	auto currentPrice = gMarket.GetCurrentPrice();
+	auto currentPrice = m_IdealCurve.m_Data[gMarket.m_CurrentDataIndex];
 
 	auto originalSize = m_CurrentTrades.size();
 
-	m_OriginalCurve.m_Data.push_back(currentPrice);
+//	m_OriginalCurve.m_Data.push_back(currentPrice);
 
  	if (gMarket.m_CurrentDataIndex <= 15)
  	{
  		return;	// we need a bit of data 
  	}
 
- 	m_SmoothedCurve = m_OriginalCurve.CreateMovingAverage(15);
- 	m_DerivativeCurve = m_SmoothedCurve.CreateDerivate();
- 	m_SmoothedDerivativeCurve = m_DerivativeCurve.CreateMovingAverage(15);
+//  	m_SmoothedCurve = m_OriginalCurve.CreateMovingAverage(15);
+//  	m_DerivativeCurve = m_SmoothedCurve.CreateDerivate();
+//  	m_SmoothedDerivativeCurve = m_DerivativeCurve.CreateMovingAverage(15);
 
 	for (auto it = m_CurrentTrades.begin(); it != m_CurrentTrades.end(); /*noincrement*/)
 	{
@@ -52,8 +61,8 @@ void Model::Reset()
 	}
 	m_CurrentTrades.clear();
 
-	m_OriginalCurve.Clear();
-	m_SmoothedCurve.Clear();
-	m_DerivativeCurve.Clear();
-	m_SmoothedDerivativeCurve.Clear();
+// 	m_OriginalCurve.Clear();
+// 	m_SmoothedCurve.Clear();
+// 	m_DerivativeCurve.Clear();
+// 	m_SmoothedDerivativeCurve.Clear();
 }

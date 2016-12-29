@@ -1,9 +1,19 @@
 #include "WebGenerator.h"
+#include "genv.h"
+#include <sstream>
 
 //////////////////////////////////////////////////////////////////////////
 void WebGenerator::PushGraph(const char* path, GraphType::Type type)
 {
 	m_Graphs.emplace_back(type, path);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void WebGenerator::PushCurrentGraph()
+{
+	std::stringstream ss; 
+	AppendSuffix(ss, "");
+	m_GraphSegment.push_back(ss.str().erase(0,1));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -15,7 +25,8 @@ void WebGenerator::Generate(const char* path)
 	WriteLine("<html>");
 
 	GenerateHeader();
-	GenerateBody();
+//	GenerateBody();
+	GenerateBody_New();
 
 	WriteLine("</html>");
 
@@ -55,7 +66,7 @@ void WebGenerator::GenerateBody()
 		m_fs << "<script type=\"text/javascript\">\n";
 		m_fs << generatedId << " = new Dygraph(document.getElementById(\"" << generatedId << "\"), \"" << graphPath << "\", {\n";
 		m_fs << "highlightCircleSize: 2, highlightSeriesOpts : { strokeWidth: 1, strokeBorderWidth : 1, highlightCircleSize : 2 },\n";
-		m_fs << "labels : [\"X\", \"value\", \"target\"],\n";
+		m_fs << "labels : [\"X\", \"c1\", \"c2\"],\n";
 		m_fs << "animatedZooms : true,\n";
 
 		if (graphInfo.first == GraphType::PositiveNegative)
@@ -74,6 +85,49 @@ void WebGenerator::GenerateBody()
 		}
 
 
+
+		m_fs << "</script>\n";
+	}
+
+	WriteLine("</body>");
+}
+
+//////////////////////////////////////////////////////////////////////////
+void WebGenerator::GenerateBody_New()
+{
+	WriteLine("<body>");
+
+	m_fs << "TOTAL: " << gTotalProfit << "<br/><br/>\n";
+
+	std::string path = "D:\\ProjectHillside\\web\\";
+
+	for (auto& graphSufix : m_GraphSegment)
+	{
+		std::string subFolder = "graphs/";
+		std::string bestFileName = subFolder + "best_" + graphSufix + ".txt";
+		std::string annotationFileName = subFolder + "annotations_" + graphSufix + ".js";
+		std::string idealCurveFileName = subFolder + "idealCurve_" + graphSufix + ".csv";
+		std::string graphId(std::string("g") + graphSufix);
+
+		std::ifstream bestSrc(path + bestFileName);
+		std::stringstream file;
+		file << bestSrc.rdbuf(); bestSrc.close();
+
+		m_fs << file.str();
+
+		m_fs << "<div id=\"" << graphId << "\" style=\"width:90%;\"></div><br/>\n";
+
+		m_fs << "<script type=\"text/javascript\" src=\"" << annotationFileName << "\"></script>" << "\n";
+
+		m_fs << "<script type=\"text/javascript\">\n";
+		m_fs << graphId << " = new Dygraph(document.getElementById(\"" << graphId << "\"), \"" << idealCurveFileName << "\", {\n";
+		m_fs << "highlightCircleSize: 2, highlightSeriesOpts : { strokeWidth: 1, strokeBorderWidth : 1, highlightCircleSize : 2 },\n";
+		m_fs << "labels : [\"X\", \"c1\", \"c2\"],\n";
+		m_fs << "animatedZooms : true,\n";
+		m_fs << "});\n\n";
+
+		m_fs << graphId << ".ready(gAnnotation_" << graphSufix;
+		m_fs << "(" << graphId << "));\n";
 
 		m_fs << "</script>\n";
 	}

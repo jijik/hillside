@@ -59,5 +59,8 @@
     <ClInclude Include="WebGenerator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Combinator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

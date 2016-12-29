@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////
 Curve::Curve(Curve&& rhs)
@@ -46,9 +47,9 @@ void Curve::Save(const char* path, double targetRatio /*= 1.0f*/)
 	std::ofstream file(path);
 	unsigned i = 0;
 	if (targetRatio != 1.0)
-		file << i << ", value, target" << "\n";
+		file << i << ", c1, c2" << "\n";
 	else
-		file << i << ", value" << "\n";
+		file << i << ", c1" << "\n";
 
 	for (auto value : m_Data)
 	{
@@ -97,23 +98,54 @@ void Curve::BinarySave(const char* path)
 //////////////////////////////////////////////////////////////////////////
 Curve Curve::CreateMovingAverage(unsigned neighborCount)
 {
+	return CreateMovingAverage(neighborCount, neighborCount);
+}
+
+//////////////////////////////////////////////////////////////////////////
+Curve Curve::CreateMovingAverage(unsigned historyCount, unsigned futureCount)
+{
 	int size = m_Data.size();
 	Curve c;
 	c.m_Data.resize(size);
+
+	auto range = futureCount + historyCount;
+
+	double lastSum = 0.0;
+
 	for (int i = 0; i < size; ++i)
 	{
-		int from = i - neighborCount;
-		int to = i + neighborCount;
-		if (from < 0) from = 0;
-		if (to > size) to = size;
-		auto elements = to - from;
-		auto localSum = 0.0;
-		for (int mi = from; mi < to; ++mi)
-		{
-			localSum += m_Data[mi];
-		}
+		int from = i - historyCount;
+		int to = i + futureCount;
 
-		c.m_Data[i] = localSum / static_cast<double>(elements);
+		if (from < 0 || to > size)	// handle ends
+		{
+			if (from < 0) from = 0; 
+			if (to > size) to = size;
+
+			auto elements = to - from;
+			auto localSum = 0.0;
+			for (int mi = from; mi < to; ++mi)
+			{
+				localSum += m_Data[mi];
+			}
+			c.m_Data[i] = localSum / static_cast<double>(elements);
+		}
+		else if (from == 0)	// calculate first regular average
+		{
+			auto elements = to - from;
+			auto localSum = 0.0;
+			for (int mi = from; mi < to; ++mi)
+			{
+				localSum += m_Data[mi];
+			}
+			lastSum = localSum;
+			c.m_Data[i] = localSum / static_cast<double>(elements);
+		}
+		else // calculate general case, reuse
+		{
+			lastSum = lastSum - m_Data[from - 1] + m_Data[to - 1];
+			c.m_Data[i] = lastSum / static_cast<double>(range);
+		}
 	}
 	return c;
 }
@@ -144,7 +176,23 @@ Curve Curve::CreateSubcurveFromIndex(unsigned index)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Curve::Crop(double begin, double end) //0-1
+void Curve::SaveCSV(Curve& c1, Curve& c2, const char* path)
+{
+	assert(c1.m_Data.size() == c2.m_Data.size());
+
+	std::ofstream file(path);
+	unsigned row = 0;
+	file << row << ", c1, c2" << "\n";
+
+	for (unsigned i = 0; i < c1.m_Data.size(); ++i)
+	{
+		file << row++ << "," << c1.m_Data[i] << "," << c2.m_Data[i] << "\n";
+	}
+
+	file.close();
+}
+//////////////////////////////////////////////////////////////////////////
+void Curve::CropInPlace(double begin, double end)
 {
 	auto size = m_Data.size();
 	auto b = static_cast<unsigned>(size  * begin);
@@ -153,6 +201,21 @@ void Curve::Crop(double begin, double end) //0-1
 	e = std::min(e, size);
 
 	m_Data = std::vector<double>(&m_Data[b], &m_Data[e]);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+Curve Curve::Crop(double begin, double end) //0-1
+{
+	auto size = m_Data.size();
+	auto b = static_cast<unsigned>(size  * begin);
+	auto e = static_cast<unsigned>(size  * end);
+
+	e = std::min(e, size);
+
+	Curve ret;
+	ret.m_Data = std::vector<double>(&m_Data[b], &m_Data[e]);
+	return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////

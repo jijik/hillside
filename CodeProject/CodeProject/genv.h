@@ -2,6 +2,7 @@
 
 #include "Model.h"
 #include "Market.h"
+#include <sstream>
 
 extern Model gModel;
 
@@ -17,6 +18,15 @@ inline double SmoothValue(double originalValue, double newValue, double oldValWe
 extern double gBuySmoothWeight;
 extern double gSellSmoothWeight;
 
+extern double gIdealCurveMovingAvgHistoryNeighbors;
+extern double gIdealCurveMovingAvgFutureNeighbors;
+
+template <typename Stream>
+inline void	AppendSuffix(Stream& ss, const char* suff)
+{
+	ss << "_" << int(10000 * gMarket.m_From) << "_" << int(10000 * gMarket.m_To) << suff;
+}
+
 namespace AppMode 
 {
 	enum type
@@ -27,3 +37,5 @@ namespace AppMode
 }
 
 extern AppMode::type gAppMode;
+
+extern double gTotalProfit;
