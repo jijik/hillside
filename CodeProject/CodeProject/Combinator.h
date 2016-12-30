@@ -105,11 +105,12 @@ struct Combinator
 
 			while (true)
 			{
-				func();
 				randomValues();
+				func();
 
-				auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start);
-				if (duration.count() > randomSearchDurationSecond)
+				auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+				double elapsedSeconds = duration.count() / 1000.0;
+				if (elapsedSeconds > randomSearchDurationSecond)
 				{
 					std::cout << "SearchTime is up...\n";
 					break;

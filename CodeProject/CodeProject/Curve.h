@@ -24,7 +24,10 @@ struct Curve
 	Curve	CreateDerivate();
 	Curve	CreateSubcurveFromIndex(unsigned index);
 
+	double CalculateAverageError(Curve& from);
+
 	static void SaveCSV(Curve& c1, Curve& c2, const char* path);
+
 
 	std::vector<double> m_Data;
 };

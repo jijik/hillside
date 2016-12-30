@@ -15,6 +15,7 @@
 #include "genv.h"
 #include "WebGenerator.h"
 #include "Combinator.h"
+#include "MinimalCurveErrorFinder.h"
 
 void SaveGenv(double profit, const char* path)
 {
@@ -29,6 +30,7 @@ void SaveGenv(double profit, const char* path)
 }
 
 double currentBest;
+double timeToSearchOneCurve = 10.0;
 
 void FindBest(double from, double to)
 {
@@ -37,11 +39,10 @@ void FindBest(double from, double to)
 	currentBest = -std::numeric_limits<double>::max();
 
 	Combinator combinator;
-	combinator.AddVariable(gIdealCurveMovingAvgHistoryNeighbors, 1.1, 3.0, 1.0);
-	combinator.AddVariable(gIdealCurveMovingAvgFutureNeighbors, 1.1, 30.0, 1.0);
-	combinator.AddVariable(gBuySmoothWeight, 0.8, 0.99, 0.05);
-	combinator.AddVariable(gSellSmoothWeight, 0.8, 0.99, 0.05);
-	double timeToSearch = 60.0;
+	combinator.AddVariable(gIdealCurveMovingAvgHistoryNeighbors, 1.1, 20.0, 1.0);
+	combinator.AddVariable(gIdealCurveMovingAvgFutureNeighbors, 2.1, 1.11, 1.0);
+	combinator.AddVariable(gBuySmoothWeight, 0.07, 0.99, 0.001);
+	combinator.AddVariable(gSellSmoothWeight, 0.07, 0.99, 0.001);
 
 	combinator.Combine([&]() 
 	{
@@ -89,7 +90,7 @@ void FindBest(double from, double to)
 
 		gMarket.Reset();
 		gModel.Reset();
-	}, timeToSearch);
+	}, timeToSearchOneCurve);
 }
 
 void Analyze()
@@ -126,6 +127,9 @@ void Analyze()
 
 int main()
 {
+// 	FindMinimalCurveError();
+// 	return 0;
+
  	//if (gAppMode == AppMode::Analyze) Analyze();
  	//else FindBest();
 
@@ -137,16 +141,26 @@ int main()
 
 	WebGenerator gen;
 	
-	double from = 0.82;
-	while (from < 0.83)
+	double advanceStep = 0.005;
+	double range = 0.005;
+	double begin = 0.42;
+	double end = 0.43;
+
+	double totalSearchTimeSec = 1.0 * 60.0;
+	timeToSearchOneCurve = totalSearchTimeSec / ((end - begin) / advanceStep);
+
+	double from = begin;
+	while (from < end)
 	{
-		double to = from + 0.005;
+		double to = from + range;
 		FindBest(from, to);
-		from += 0.005;
+		from += advanceStep;
 
 		gTotalProfit += currentBest;
 
 		gen.PushCurrentGraph();
+
+		std::cout << unsigned((from - begin) / (end - begin) * 100) << "%\n";
 	}
 
 	gen.Generate("D:\\ProjectHillside\\web\\generated.html");

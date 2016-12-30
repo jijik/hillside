@@ -176,6 +176,22 @@ Curve Curve::CreateSubcurveFromIndex(unsigned index)
 }
 
 //////////////////////////////////////////////////////////////////////////
+double Curve::CalculateAverageError(Curve& from)
+{
+	auto size = m_Data.size();
+	assert(size == from.m_Data.size());
+
+	double sum = 0.0;
+
+	for (unsigned i = 0; i < size; ++i)
+	{
+		sum += abs(m_Data[i] - from.m_Data[i]);
+	}
+
+	return sum / double(size);
+}
+
+//////////////////////////////////////////////////////////////////////////
 void Curve::SaveCSV(Curve& c1, Curve& c2, const char* path)
 {
 	assert(c1.m_Data.size() == c2.m_Data.size());

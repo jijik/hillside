@@ -124,6 +124,7 @@
     <ClInclude Include="Curve.h" />
     <ClInclude Include="genv.h" />
     <ClInclude Include="Market.h" />
+    <ClInclude Include="MinimalCurveErrorFinder.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Trade.h" />
     <ClInclude Include="WebGenerator.h" />
